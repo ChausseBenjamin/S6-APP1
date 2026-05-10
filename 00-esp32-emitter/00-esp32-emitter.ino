@@ -3,19 +3,31 @@
 #include "99-utils.ino"
 #include "98-UART-slave.ino"
 
-int min_delay = 0;
+int global_min_delay = 0;
 
+// Avoid constantly allocating+freeing:
+// Always rewrite to the same memory location on every read
 int light_data;
 HumidityData humidity_data;
 
 void setup() {
   Serial.begin(BAUD_RATE);
-  delay(1000);
+  delay(SERIAL_CONN_AWAIT);
   Serial.println("Setting up devices...");
-  min_delay = 0;
 
-  min_delay = max(light_setup(),    min_delay);
-  min_delay = max(humidity_setup(), min_delay);
+  Module modules[] = {
+    { light_setup,    light_error_manager    },
+    { humidity_setup, humidity_error_manager },
+  };
+
+  // Automated setup for every module
+  int module_count = LENGTH(modules);
+  for (int i=0; i<module_count; i++) {
+    // run the setup func
+    SetupResult r = modules[i].init();
+    min_delay = max(min_delay, r.min_delay);
+    modules[i].log_errors(r.error);
+  }
 
   Serial.printf("Setup Completed in %dms\n", elapsed());
 }
@@ -26,12 +38,12 @@ void loop() {
   light_data = light_read();
 
   humidity_read(&humidity_data);
-  log_humidity_errors(humidity_data.error);
+  humidity_error_manager(humidity_data.error);
 
   Serial.printf("Light: %d, Humidity{H: %f, Temp: %f}\n",
     light_data,
     humidity_data.humidity,
     humidity_data.temp);
 
-  while (elapsed() < min_delay);
+  while (elapsed() < global_min_delay);
 }
