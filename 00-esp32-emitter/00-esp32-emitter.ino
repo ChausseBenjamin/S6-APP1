@@ -1,6 +1,7 @@
 #include "01-light.ino"
 #include "02-humidity.ino"
 #include "99-utils.ino"
+#include "98-UART-slave.ino"
 
 int min_delay = 0;
 
