@@ -41,9 +41,9 @@ void uart_master_read(UARTData *dest) {
   String message = "";
 
   while (millis() - start_time < UART_TIMEOUT_MS) {
-    while (uart.available()) {
+    while (UART.available()) {
       received_things = true;
-      char received = uart.read();
+      char received = UART.read();
 
       if (!seen_start_char) {
         if (received == UART_START_CHAR) {
@@ -59,7 +59,7 @@ void uart_master_read(UARTData *dest) {
         message += received;
 
         // Prevents memory busting in case of error
-        if (msg.length() > UART_MESSAGE_MAX_LENGTH) {
+        if (message.length() > UART_MESSAGE_MAX_LENGTH) {
           dest->raw = message;
           dest->error = UART_ERROR_MESSAGE_TOO_LONG;
           return;
