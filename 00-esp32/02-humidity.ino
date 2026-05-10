@@ -15,27 +15,25 @@ typedef struct HumidityData {
   int error;
 } HumidityData;
 
-// 2 in 1: also returns the minimum delay needed
-// between reads.
+// Returns min delay needed (~DHT sensors)
 int humidity_setup() {
-  pinMode(HUMID_PIN, INPUT);
+  // Do NOT set pinMode here; DHT protocol does it per-read
   return 2000;
 }
 
 void humidity_read(HumidityData *dest) {
   int i, j;
-  int duration[42];
+  int duree[42];
   unsigned long pulse;
   byte data[5];
-  float humidite;
-  float temperature;
-  int broche = 16;
-
-  // clean struct pointer:
   dest->temp = 0;
   dest->humidity = 0;
-  dest->error = ERROR_NONE;
+  dest->error = HUMID_ERROR_NONE;
 
+  // REFERENCE: Working labo sketch logic
+  delay(2); // tiny pause before init (was delay(2000) in loop in sample)
+
+  pinMode(HUMID_PIN, OUTPUT_OPEN_DRAIN);
   digitalWrite(HUMID_PIN, HIGH);
   delay(250);
   digitalWrite(HUMID_PIN, LOW);
@@ -48,42 +46,43 @@ void humidity_read(HumidityData *dest) {
   i = 0;
 
   do {
-        pulse = pulseIn(HUMID_PIN, HIGH);
-        duration[i] = pulse;
-        i++;
-  } while (pulse != 0);
+    pulse = pulseIn(HUMID_PIN, HIGH);
+    duree[i] = pulse;
+    i++;
+  } while (pulse != 0 && i < 42);
 
   if (i != 42) {
     dest->error = HUMID_ERROR_TIMING;
-    return ;
-  };
+    return;
+  }
 
-  for (i=0; i<5; i++) {
+  for (i = 0; i < 5; i++) {
     data[i] = 0;
-    for (j = ((8*i)+1); j < ((8*i)+9); j++) {
+    for (j = ((8 * i) + 1); j < ((8 * i) + 9); j++) {
       data[i] = data[i] * 2;
-      if (duration[j] > 50) {
+      if (duree[j] > 50) {
         data[i] = data[i] + 1;
       }
     }
   }
 
-  if ( (data[0] + data[1] + data[2] + data[3]) != data[4] ) {
+  if ((data[0] + data[1] + data[2] + data[3]) != data[4]) {
     dest->error = HUMID_ERROR_CHECKSUM;
-    return ;
+    return;
   }
 
   dest->humidity = data[0] + (data[1] / 256.0);
-  dest->temp = data [2] + (data[3] / 256.0);
-
+  dest->temp = data[2] + (data[3] / 256.0);
 }
 
 void log_humidity_errors(int status) {
   switch (status) {
     case HUMID_ERROR_TIMING:
       Serial.println("HUMIDITY: Timing error!");
+      break;
     case HUMID_ERROR_CHECKSUM:
       Serial.println("HUMIDITY: Checksum error!");
+      break;
   }
 }
 
