@@ -1,5 +1,5 @@
-#ifndef __98_UART_SLAVE__
-#define __98_UART_SLAVE__
+#ifndef __UART_SLAVE__
+#define __UART_SLAVE__
 
 #define PIN_RX 17
 #define PIN_TX 16
@@ -90,7 +90,7 @@ void uart_slave_answer(UARTData *dest) {
   }
 }
 
-void log_UART_errors(int status) {
+void uart_error_manager(int status) {
   switch (status) {
     case UART_ERROR_NONE:
       break;
@@ -115,5 +115,4 @@ void log_UART_errors(int status) {
   }
 }
 
-
-#endif
+#endif // __UART_SLAVE__
