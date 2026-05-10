@@ -1,0 +1,88 @@
+\documentclass[a4paper]{article}
+\usepackage{titling}
+\usepackage{tabularx}
+\usepackage{titlepage}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{document}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{utils}
+\usepackage{multicol}
+\usepackage{subcaption}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage{hyperref}
+\usepackage{times}
+\usepackage[toc,page]{appendix}
+
+% Guide etudiant requires custom header/footer for some reason
+\usepackage{fancyhdr}
+
+\title{Rapport d'APP}
+
+\class{Réseaux sans fil}
+\classnb{GIF673}
+\renewcommand{\frenchtablename}{Tableau}
+
+\teacher{Domingo Palao Muñoz}
+
+\author{
+  \addtolength{\tabcolsep}{-0.4em}
+  \begin{tabular}{rcl}
+      Benjamin Chausse & -- & CHAB1704 \\
+      Shawn Couture    & -- & COUS1912 \\
+  \end{tabular}
+}
+
+\makeatletter
+\let\title\@title
+\let\authors\@author
+\let\thedate\@date
+\makeatother
+
+\begin{document}
+\maketitle
+\contents{
+\tableofcontents
+% \listoffigures
+% \listoftables
+}
+\pagestyle{fancy}
+\fancyhf{} % clear default header/footer
+\fancyhead[L]{\footnotesize \title}
+\fancyhead[R]{\footnotesize Benjamin Chaussé, Shawn Couture}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt} % optional
+\renewcommand{\footrulewidth}{0pt}
+
+\section{Introduction}
+
+\note{Sans page titre+bibliographie+table des matieres, est-ce qu'on fit sur 3
+pages? (We must)} \\
+\todo{Ecrire une intro (keep it short: on a juste 3 pages)}
+
+% Pour faire votre analyse, vous devrez prendre en considération les éléments de contexte inclut
+% dans la problématique. Vous êtes libre de compléter le contexte si des éléments ne sont pas
+% mentionnées. Il est attendu que les éléments de discussions ne soient pas analysés en silo.
+% Par exemple, le choix d'une interface de communications sans �l peut impacter le choix
+% d'interface entre le capteur et le microcontrôleur.
+
+\section{Étude de cas pour l'usage de nouveaux capteurs}
+\input{01-new-sensors.tex}
+
+\section{Requis pour un déploiement commercial}
+\input{02-commercial-changes.tex}
+
+\section{Conclusion}
+\todo{Ecrire une conclusion (keep it short: on a juste 3 pages)}
+
+\todo{Ecrire une conclusion}
+
+% \newpage
+% \appendix
+% \input{99-annexe.tex}
+
+\end{document}
