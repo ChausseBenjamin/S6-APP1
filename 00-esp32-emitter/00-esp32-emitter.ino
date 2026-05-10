@@ -16,7 +16,7 @@ void setup() {
   min_delay = max(light_setup(),    min_delay);
   min_delay = max(humidity_setup(), min_delay);
 
-  Serial.printf("Setup Completed in %dms\n" elapsed());
+  Serial.printf("Setup Completed in %dms\n", elapsed());
 }
 
 void loop() {
