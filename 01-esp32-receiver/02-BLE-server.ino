@@ -51,8 +51,11 @@ int ble_server_setup() {
   pClient->setClientCallbacks(new WeatherCallback());
 
   Serial.println("BLE: Connect called...");
-  pClient->connect(sensorStationAddress);
-  Serial.println("BLE: connect executed, outcome unknown.");
+  if (pClient->connect(sensorStationAddress)) {
+    Serial.println("BLE: Connected!");
+  } else {
+    Serial.println("BLE ERROR: Failed to establish connection");
+  }
 
   BLERemoteService* pService = pClient->getService(SERVICE_UUID);
   pRemoteChar = pService->getCharacteristic(CHAR_UUID);
