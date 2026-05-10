@@ -1,7 +1,7 @@
 # === ESP32 Arduino CLI Makefile ===
 
 # Set these to match your system & board:
-SKETCH_DIR := /home/master/Dropbox/A/scholar/sherbrooke/26-05-S6/app1/out/00-esp32
+SKETCH_DIR := /home/master/Dropbox/A/scholar/sherbrooke/26-05-S6/app1/out/00-esp32-emitter
 PORT := /dev/ttyUSB0
 FQBN := esp32:esp32:esp32
 BAUD := 115200
