@@ -5,7 +5,9 @@
 
 #define HUMID_PIN 16
 
-#define HUMID_ERROR_NONE     0
+#define HUMID_READ_DELAY 2000
+
+#define HUMID_ERROR_NONE     ERROR_NONE
 #define HUMID_ERROR_TIMING   1
 #define HUMID_ERROR_CHECKSUM 2
 
@@ -15,10 +17,16 @@ typedef struct HumidityData {
   int error;
 } HumidityData;
 
-// Returns min delay needed (~DHT sensors)
-int humidity_setup() {
+// ---- humidity-sensor.ino ----
+SetupResult humidity_setup() {
+  SetupResult result = {
+    .min_delay = HUMID_READ_DELAY,
+    .error     = ERROR_NONE
+  };
+
   // Do NOT set pinMode here; DHT protocol does it per-read
-  return 2000;
+
+  return result;
 }
 
 void humidity_read(HumidityData *dest) {
@@ -75,7 +83,7 @@ void humidity_read(HumidityData *dest) {
   dest->temp = data[2] + (data[3] / 256.0);
 }
 
-void log_humidity_errors(int status) {
+void humidity_error_manager(int status) {
   switch (status) {
     case HUMID_ERROR_TIMING:
       Serial.println("HUMIDITY: Timing error!");
