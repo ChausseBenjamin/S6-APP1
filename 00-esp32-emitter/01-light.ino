@@ -16,9 +16,9 @@ SetupResult light_setup() {
   return result;
 }
 
-int light_read() {
-  int val = analogRead(LIGHT_PIN);
-  return val;
+void light_read(int *dest) {
+  *dest = analogRead(LIGHT_PIN);
+  return ;
 }
 
 void light_error_manager(int status) {

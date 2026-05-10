@@ -1,1 +1,7 @@
 build/
+libraries/
+.arduino*
+.arduino-cli*
+__pycache__/
+.DS_Store
+.cache/

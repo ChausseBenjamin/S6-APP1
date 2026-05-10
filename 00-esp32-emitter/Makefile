@@ -27,3 +27,9 @@ upload-monitor: upload
 
 clean:
 	rm -rf $(SKETCH_DIR)/build
+
+setup:
+	$(CLI) core install esp32:esp32
+	$(CLI) lib install "Adafruit DPS310@1.1.6"
+	$(CLI) lib install "Adafruit Unified Sensor@1.1.15"
+	$(CLI) lib install "Adafruit BusIO@1.17.4"

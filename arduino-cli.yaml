@@ -1,0 +1,7 @@
+# Arduino CLI project configuration
+board:
+  fqbn: esp32:esp32:esp32
+libraries:
+  - "Adafruit DPS310"
+  - "Adafruit Unified Sensor"
+  - "Adafruit BusIO"
