@@ -3,6 +3,7 @@
 #include "03-pressure.ino"
 #include "99-utils.ino"
 #include "98-UART-slave.ino"
+#include <BLEDevice.h>
 
 int global_min_delay = 0;
 
