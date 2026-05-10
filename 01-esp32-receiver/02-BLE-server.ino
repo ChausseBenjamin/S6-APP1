@@ -1,9 +1,9 @@
 #ifndef __02_BLE_SERVER__
 #define __02_BLE_SERVER__
 
-#define SERVICE_UUID        "12345678-1234-1234-1234-1234567890ab"
-#define CHAR_UUID           "abcd1234-1234-1234-1234-abcdef123456"
-#define STATION_MAC_ADDRESS "0000"
+#define SERVICE_UUID          "12345678-1234-1234-1234-1234567890ab"
+#define CHAR_UUID             "abcd1234-1234-1234-1234-abcdef123456"
+#define STATION_MAC_ADDRESS   "c4:de:e2:c0:0e:86"
 #define BLE_BASE_STATION_NAME "Base station" 
 
 #include <BLEDevice.h>
