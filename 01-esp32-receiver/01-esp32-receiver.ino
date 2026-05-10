@@ -1,4 +1,5 @@
 #include "00-UART-master.ino"
+#include "02-BLE-server.ino"
 #include "99-utils.ino"
 
 int min_delay = 0;
@@ -10,6 +11,7 @@ void setup() {
   Serial.println("Setting up devices...");
 
   min_delay = max(uart_master_setup(), min_delay);
+  min_delay = max(ble_server_setup(), min_delay);
 
   Serial.printf("Setup Completed in %dms\n", elapsed());
 }
