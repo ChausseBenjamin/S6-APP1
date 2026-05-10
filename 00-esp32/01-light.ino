@@ -1,3 +1,6 @@
+#ifndef __LIGHT_SENSOR__
+#define __LIGHT_SENSOR__
+
 #define LIGHT_PIN 34
 
 // 2 in 1: also returns the minimum delay needed
@@ -11,3 +14,5 @@ int light_read() {
   int val = analogRead(LIGHT_PIN);
   return val;
 }
+
+#endif // __LIGHT_SENSOR__

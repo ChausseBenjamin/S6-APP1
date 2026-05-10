@@ -1,3 +1,8 @@
+#ifndef __HUMIDITY_SENSOR__
+#define __HUMIDITY_SENSOR__
+
+#include "99-utils.ino"
+
 #define HUMID_PIN 16
 
 #define HUMID_ERROR_NONE     0
@@ -29,7 +34,7 @@ void humidity_read(HumidityData *dest) {
   // clean struct pointer:
   dest->temp = 0;
   dest->humidity = 0;
-  dest->error = HUMID_ERROR_NONE;
+  dest->error = ERROR_NONE;
 
   digitalWrite(HUMID_PIN, HIGH);
   delay(250);
@@ -81,3 +86,5 @@ void log_humidity_errors(int status) {
       Serial.println("HUMIDITY: Checksum error!");
   }
 }
+
+#endif // __HUMIDITY_SENSOR__
