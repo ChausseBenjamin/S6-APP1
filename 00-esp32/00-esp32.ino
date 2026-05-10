@@ -13,10 +13,10 @@ void setup() {
   Serial.println("Setting up devices...");
   min_delay = 0;
 
-  min_delay = max(min_delay, light_setup());
-  min_delay = max(min_delay, humidity_setup());
+  min_delay = max(light_setup(),    min_delay);
+  min_delay = max(humidity_setup(), min_delay);
 
-  Serial.printf("Setup Completed\n");
+  Serial.printf("Setup Completed in %dms\n" elapsed());
 }
 
 void loop() {
