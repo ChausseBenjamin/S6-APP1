@@ -1,10 +1,11 @@
 #include "01-light.ino"
 #include "02-humidity.ino"
 #include "03-pressure.ino"
+#include "04-wind.ino"
+
 #include "99-utils.ino"
 #include "98-UART-slave.ino"
 #include "97-BLE-station.ino"
-#include <BLEDevice.h>
 
 int global_min_delay = 0;
 
@@ -13,6 +14,7 @@ int global_min_delay = 0;
 int light_data;
 HumidityData humidity_data;
 PressureData pressure_data;
+WindData     wind_data;
 
 void setup() {
   Serial.begin(BAUD_RATE);
@@ -21,8 +23,10 @@ void setup() {
 
   Module modules[] = {
     { light_setup,    light_error_manager    },
+    { wind_setup,     wind_error_manager     },
     { humidity_setup, humidity_error_manager },
     { pressure_setup, pressure_error_manager },
+    { wind_setup,     wind_error_manager     },
   };
 
   // Automated setup for every module
@@ -46,16 +50,19 @@ void loop() {
   light_read(&light_data);
   humidity_read(&humidity_data);
   pressure_read(&pressure_data);
+  wind_read(&wind_data);
 
   humidity_error_manager(humidity_data.error);
   pressure_error_manager(pressure_data.error);
+  wind_error_manager(wind_data.error);
 
-  Serial.printf("light:%d,humidity:{H:%f,T:%f},pressure:{P:%f,T:%f}\n",
+  Serial.printf("light:%d,humidity:{H:%f,T:%f},pressure:{P:%f,T:%f},wind:{dir:%f}\n",
     light_data,
     humidity_data.humidity,
     humidity_data.temp,
     pressure_data.pressure,
-    pressure_data.temp);
+    pressure_data.temp,
+    wind_data.angle);
 
   while (elapsed() < global_min_delay);
 }

@@ -8,6 +8,22 @@
 
 #define LENGTH(x) (sizeof(x) / sizeof((x)[0]))
 
+int min_idx(const int *arr, size_t len) {
+  if (len == 0) return -1;
+
+  int min_val = INT_MAX;
+  int min_idx = 0;
+
+  for (size_t i = 0; i < len; i++) {
+    if (arr[i] < min_val) {
+      min_val = arr[i];
+      min_idx = (int)i;
+    }
+  }
+
+  return min_idx;
+}
+
 // ---- SETUP API
 
 typedef struct SetupResult {

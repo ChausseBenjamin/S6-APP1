@@ -26,7 +26,7 @@ typedef struct UARTData {
   float temperature;        // Celcius
   float humidity;           // Percentage
   float wind_speed;         // m/s
-  float wind_direction;     // radians
+  float wind_direction;     // degrees
   float pressure;           // kPA
   float light;              // Lux
   float precipitation;      // No idea

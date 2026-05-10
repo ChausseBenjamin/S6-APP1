@@ -39,7 +39,8 @@ def girouette_spagett(R1=1000, Vin=3.3, inverted=False):
         if inverted:
             r1, r2 = r2, r1
         Vout = Vin * (r2 / (r1 + r2))
-        print(f"Angle: {theta:6.1f} | Vout: {Vout:6.3f}")
+        # ready to copy/paste in the C code
+        print(f"{{ {theta:6.1f}, {Vout:6.3f} }},")
 
 
 def main():
