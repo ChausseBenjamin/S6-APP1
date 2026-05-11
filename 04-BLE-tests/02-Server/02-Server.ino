@@ -1,101 +1,94 @@
 #include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEClient.h>
+#include <BLERemoteCharacteristic.h>
 
-static BLEAddress *serverAddress;
-static BLERemoteCharacteristic* remoteCharacteristic;
+// MAC address of the SERVER ESP32
+static BLEAddress serverAddress("c4:de:e2:c0:0e:86");
 
+// Must match the server
 #define SERVICE_UUID        "12345678-1234-1234-1234-123456789abc"
 #define CHARACTERISTIC_UUID "abcdefab-1234-5678-1234-abcdefabcdef"
 
-bool doConnect = false;
-bool connected = false;
+BLERemoteCharacteristic* remoteCharacteristic;
+BLEClient* pClient;
 
+// Called whenever the server sends a notification
 static void notifyCallback(
-  BLERemoteCharacteristic* pBLERemoteCharacteristic,
-  uint8_t* pData,
-  size_t length,
-  bool isNotify) {
+    BLERemoteCharacteristic* pBLERemoteCharacteristic,
+    uint8_t* pData,
+    size_t length,
+    bool isNotify) {
 
   Serial.print("Received: ");
 
-  for (int i = 0; i < length; i++) {
+  for (size_t i = 0; i < length; i++) {
     Serial.print((char)pData[i]);
   }
 
   Serial.println();
 }
 
-class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
-  void onResult(BLEAdvertisedDevice advertisedDevice) {
-
-    if (advertisedDevice.haveServiceUUID() &&
-        advertisedDevice.isAdvertisingService(BLEUUID(SERVICE_UUID))) {
-
-      Serial.println("Found server!");
-
-      serverAddress = new BLEAddress(advertisedDevice.getAddress());
-      doConnect = true;
-
-      BLEDevice::getScan()->stop();
-    }
-  }
-};
-
 bool connectToServer() {
 
-  BLEClient* pClient = BLEDevice::createClient();
+  Serial.println("Connecting to server...");
 
-  if (!pClient->connect(*serverAddress)) {
+  pClient = BLEDevice::createClient();
+
+  // Connect using known MAC address
+  if (!pClient->connect(serverAddress)) {
+    Serial.println("Connection failed");
     return false;
   }
 
-  BLERemoteService* pRemoteService =
+  Serial.println("Connected");
+
+  // Get service
+  BLERemoteService* remoteService =
       pClient->getService(SERVICE_UUID);
 
-  if (pRemoteService == nullptr) {
+  if (remoteService == nullptr) {
+    Serial.println("Service not found");
+    pClient->disconnect();
     return false;
   }
 
+  // Get characteristic
   remoteCharacteristic =
-      pRemoteService->getCharacteristic(CHARACTERISTIC_UUID);
+      remoteService->getCharacteristic(CHARACTERISTIC_UUID);
 
   if (remoteCharacteristic == nullptr) {
+    Serial.println("Characteristic not found");
+    pClient->disconnect();
     return false;
   }
 
+  // Enable notifications
   remoteCharacteristic->registerForNotify(notifyCallback);
 
-  connected = true;
+  Serial.println("Notifications enabled");
+
   return true;
 }
 
 void setup() {
+
   Serial.begin(115200);
 
   BLEDevice::init("");
 
-  BLEScan* pBLEScan = BLEDevice::getScan();
-
-  pBLEScan->setAdvertisedDeviceCallbacks(
-      new MyAdvertisedDeviceCallbacks());
-
-  pBLEScan->setActiveScan(true);
-  pBLEScan->start(0);
-
-  Serial.println("Scanning...");
+  connectToServer();
 }
 
 void loop() {
 
-  if (doConnect && !connected) {
+  // Reconnect if disconnected
+  if (!pClient->isConnected()) {
 
-    if (connectToServer()) {
-      Serial.println("Connected to server");
-    } else {
-      Serial.println("Failed to connect");
-    }
+    Serial.println("Disconnected. Reconnecting...");
 
-    doConnect = false;
+    connectToServer();
   }
 
-  delay(1000);
+  delay(2000);
 }

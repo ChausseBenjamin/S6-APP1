@@ -3,25 +3,33 @@
 
 #define SERVICE_UUID          "12345678-1234-1234-1234-1234567890ab"
 #define CHAR_UUID             "abcd1234-1234-1234-1234-abcdef123456"
+
 #define STATION_MAC_ADDRESS   "c4:de:e2:c0:0e:86"
-#define BLE_BASE_STATION_NAME "Base station" 
+
+#define BLE_BASE_STATION_NAME "Base station"
 
 #include <BLEDevice.h>
 #include <BLEClient.h>
 #include <BLERemoteCharacteristic.h>
 #include <BLEUtils.h>
 
-BLEAddress sensorStationAddress("");
-BLERemoteCharacteristic* pRemoteChar;
+// Correct BLEAddress initialization
+static BLEAddress sensorStationAddress(STATION_MAC_ADDRESS);
+
+BLEClient* pClient = nullptr;
+BLERemoteCharacteristic* pRemoteChar = nullptr;
 
 class WeatherCallback : public BLEClientCallbacks {
-    void onConnect(BLEClient* pClient) {
-      Serial.println("onConnect called");
+
+    void onConnect(BLEClient* pClient) override {
+        Serial.println("BLE: Connected callback");
     }
-    void onDisconnect(BLEClient* pClient) {
-      Serial.println("onConnect called");
+
+    void onDisconnect(BLEClient* pClient) override {
+        Serial.println("BLE: Disconnected callback");
     }
 };
+
 
 static void notifyCallback(
     BLERemoteCharacteristic* pChar,
@@ -31,7 +39,7 @@ static void notifyCallback(
 {
     String message = "";
 
-    for (int i = 0; i < length; i++) {
+    for (size_t i = 0; i < length; i++) {
         message += (char)data[i];
     }
 
@@ -39,35 +47,67 @@ static void notifyCallback(
 }
 
 int ble_server_setup() {
-  BLEDevice::init(BLE_BASE_STATION_NAME);
-  BLEClient* pClient = BLEDevice::createClient();
+    Serial.println("BLE: Setting up...");
+    BLEDevice::init(BLE_BASE_STATION_NAME);
 
-  Serial.print("Server MAC: ");
-  Serial.println(BLEDevice::getAddress().toString().c_str());
+    Serial.print("- Client MAC: ");
+    Serial.println(BLEDevice::getAddress().toString().c_str());
 
-  Serial.print("Station MAC:");
-  Serial.println(STATION_MAC_ADDRESS);
+    Serial.print("- Server MAC: ");
+    Serial.println(STATION_MAC_ADDRESS);
 
-  pClient->setClientCallbacks(new WeatherCallback());
+    // Client setup
+    pClient = BLEDevice::createClient();
+    pClient->setClientCallbacks(new WeatherCallback());
 
-  Serial.println("BLE: Connect called...");
-  if (pClient->connect(sensorStationAddress)) {
+    Serial.println("BLE: Connecting...");
+
+    // Connect directly using MAC address
+    if (!pClient->connect(sensorStationAddress)) {
+        Serial.println("BLE ERROR: Failed to connect");
+        Serial.println("YOU NEED TO RESTART THE ESP32 TO FIX THIS ISSUE");
+        return -1;
+    }
+
     Serial.println("BLE: Connected!");
-  } else {
-    Serial.println("BLE ERROR: Failed to establish connection");
-  }
 
-  BLERemoteService* pService = pClient->getService(SERVICE_UUID);
-  pRemoteChar = pService->getCharacteristic(CHAR_UUID);
+    // Get remote service
+    BLERemoteService* pService = pClient->getService(SERVICE_UUID);
 
-  if (pRemoteChar->canNotify()) {
-    Serial.println("BLE: can notify, callback binded. (does not mean connected to station)");
-    pRemoteChar->registerForNotify(notifyCallback);
-  } else {
-    Serial.println("BLE: Not registered for notifications...");
-  }
+    if (pService == nullptr) {
+      Serial.println("BLE ERROR: Service not found");
+      Serial.println("BLE: Disconnecting...");
+      pClient->disconnect();
+      Serial.println("YOU NEED TO RESTART THE ESP32 TO FIX THIS ISSUE");
+      return -1;
+    }
 
-  return 0;
+    Serial.println("BLE: Service found");
+
+    // Get remote characteristic
+    pRemoteChar = pService->getCharacteristic(CHAR_UUID);
+
+    if (pRemoteChar == nullptr) {
+        Serial.println("BLE ERROR: Characteristic not found");
+        Serial.println("BLE: Disconnecting...");
+        pClient->disconnect();
+        Serial.println("YOU NEED TO RESTART THE ESP32 TO FIX THIS ISSUE");
+        return -1;
+    }
+
+    Serial.println("BLE: Characteristic found");
+
+    // Register for notifications
+    if (pRemoteChar->canNotify()) {
+        pRemoteChar->registerForNotify(notifyCallback);
+        Serial.println("BLE: Notifications enabled");
+    } else {
+        Serial.println("BLE ERROR: Characteristic cannot notify");
+        Serial.println("THE WEATHER STATION IS WRONG!");
+        return -1;
+    }
+
+    return 0;
 }
 
 #endif
