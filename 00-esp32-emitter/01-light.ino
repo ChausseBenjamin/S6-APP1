@@ -16,12 +16,13 @@ SetupResult light_setup() {
   return result;
 }
 
-void light_read(int *dest) {
-  *dest = analogRead(LIGHT_PIN);
-  return ;
+int light_read(void *dest) {
+  int *inner = (int *) dest;
+  *inner = analogRead(LIGHT_PIN);
+  return ERROR_NONE;
 }
 
-void light_error_manager(int status) {
+void light_err_mgr(int status) {
   // doesn't have errors...
   // just to stay consistent with other devices
   return ;

@@ -90,7 +90,7 @@ void uart_slave_answer(UARTData *dest) {
   }
 }
 
-void uart_error_manager(int status) {
+void uart_err_mgr(int status) {
   switch (status) {
     case UART_ERROR_NONE:
       break;

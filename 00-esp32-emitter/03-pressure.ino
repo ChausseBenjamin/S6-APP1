@@ -40,24 +40,23 @@ SetupResult pressure_setup() {
   return result;
 }
 
-void pressure_read(PressureData *dest) {
-  // reset sensor
-  dest->error = ERROR_NONE;
+int pressure_read(void *dest) {
+  PressureData *inner = (PressureData *) dest;
 
   sensors_event_t temp_event, psi_event;
   dps.getEvents(&temp_event, &psi_event);
 
-  dest->temp     = temp_event.temperature;
-  dest->pressure = psi_event.pressure *100; // hPa->Pa
+  inner->temp     = temp_event.temperature;
+  inner->pressure = psi_event.pressure *100; // hPa->Pa
+  return ERROR_NONE;
 }
 
-void pressure_error_manager(int status) {
+void pressure_err_mgr(int status) {
   switch (status) {
     case PSI_ERROR_NO_DEVICE:
       Serial.println("PRESSURE: Missing DPS310 Sensor!");
       break;
   }
 }
-
 
 #endif // __PRESSURE_SENSOR__

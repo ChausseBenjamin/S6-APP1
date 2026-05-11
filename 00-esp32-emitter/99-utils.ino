@@ -2,9 +2,12 @@
 #define __UTILS__
 
 // ---- MISC
+
 #define BAUD_RATE         115200
 #define SERIAL_CONN_AWAIT 1000
 #define ERROR_NONE        0
+// I like golang okay...
+#define NIL               0
 
 #define LENGTH(x) (sizeof(x) / sizeof((x)[0]))
 
@@ -31,37 +34,32 @@ typedef struct SetupResult {
   int error;
 } SetupResult;
 
-// any function a sensor uses to log shit
-typedef void (*log_fn_t)(int);
 // any function a sensor uses for its setup
 typedef SetupResult (*setup_fn_t)(void);
+// any function a sensor uses to read/update sensor data
+// NOTE: it MUST cast *dest back into the correct struct
+//       before writing...
+// returns error code (or ERROR_NONE)
+typedef int (*reader_fn_t)(void *);
+// any function a sensor uses to log shit
+typedef void (*err_mgr_fn_t)(int);
 
 typedef struct Module {
-  setup_fn_t init;
-  log_fn_t   log_errors;
-  // I don't put a generic *reader* struct because every sensor
-  // has it's own return structures so I'd need
-  // to deal with pointer dereferencing bullshit to make
-  // a *clean* generalized solution work...
-  // Not worth it. Cas-par-cas it is for reading data.
+  setup_fn_t   init;
+  reader_fn_t  update;
+  err_mgr_fn_t manage_errors;
 } Module;
 
 // ---- TIMING STUFF
+
 unsigned long loopStart;
 
 unsigned long elapsed() {
-  unsigned long val = millis() - loopStart;
-  return val;
+  return millis() - loopStart;
 }
 
-// ---- ERRROR MANAGEMENT
-
-typedef void (*error_logger_fn)(int);
-
-void manage_errors(error_logger_fn logger, int status) {
-  if (logger != NULL) {
-    logger(status);
-  }
+unsigned long elapsed_since(unsigned long since) {
+  return millis() - since;
 }
 
 #endif // __UTILS__

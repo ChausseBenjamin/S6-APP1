@@ -14,7 +14,6 @@
 typedef struct HumidityData {
   float temp;
   float humidity;
-  int error;
 } HumidityData;
 
 // ---- humidity-sensor.ino ----
@@ -29,14 +28,14 @@ SetupResult humidity_setup() {
   return result;
 }
 
-void humidity_read(HumidityData *dest) {
+int humidity_read(void *dest) {
+  HumidityData *inner = (HumidityData *) dest;
   int i, j;
   int duree[42];
   unsigned long pulse;
   byte data[5];
-  dest->temp = 0;
-  dest->humidity = 0;
-  dest->error = HUMID_ERROR_NONE;
+  inner->temp = 0;
+  inner->humidity = 0;
 
   // REFERENCE: Working labo sketch logic
   delay(2); // tiny pause before init (was delay(2000) in loop in sample)
@@ -60,8 +59,7 @@ void humidity_read(HumidityData *dest) {
   } while (pulse != 0 && i < 42);
 
   if (i != 42) {
-    dest->error = HUMID_ERROR_TIMING;
-    return;
+    return HUMID_ERROR_TIMING;;
   }
 
   for (i = 0; i < 5; i++) {
@@ -75,15 +73,14 @@ void humidity_read(HumidityData *dest) {
   }
 
   if ((data[0] + data[1] + data[2] + data[3]) != data[4]) {
-    dest->error = HUMID_ERROR_CHECKSUM;
-    return;
+    return HUMID_ERROR_CHECKSUM;
   }
 
-  dest->humidity = data[0] + (data[1] / 256.0);
-  dest->temp = data[2] + (data[3] / 256.0);
+  inner->humidity = data[0] + (data[1] / 256.0);
+  inner->temp = data[2] + (data[3] / 256.0);
 }
 
-void humidity_error_manager(int status) {
+void humidity_err_mgr(int status) {
   switch (status) {
     case HUMID_ERROR_TIMING:
       Serial.println("HUMIDITY: Timing error!");

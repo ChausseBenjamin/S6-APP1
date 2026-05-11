@@ -47,9 +47,9 @@
 | Relative Humidity| Yes          | Already in code                               |
 | Pressure         | Yes          | Already in code                               |
 | Sunlight         | Yes          | Already in code                               |
-| Precipitation    | No           | Add rain gauge + counter logic                |
+| Wind Direction   | Yes          | Add wind vane + analog reading/mapping logic  |
 | Wind Speed       | No           | Add anemometer + pulse counting logic         |
-| Wind Direction   | No           | Add wind vane + analog reading/mapping logic  |
+| Precipitation    | No           | Add rain gauge + counter logic                |
 
 ---
 

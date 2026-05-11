@@ -19,7 +19,6 @@
 typedef struct WindData {
   float angle;
   float speed;
-  int   error;
 } WindData;
 
 typedef struct DirectionEntry {
@@ -81,22 +80,23 @@ int wind_dir_nearest_angle(int raw) {
   return min_idx(deltas, DIR_ANGLE_VALUES);
 }
 
-void wind_read(WindData *dest) {
-  dest->error = ERROR_NONE;
+int wind_read(void *dest) {
+  WindData *inner = (WindData *) dest;
 
   int raw_dir = wind_dir_raw();
   int angle_idx = wind_dir_nearest_angle(raw_dir);
   if (angle_idx < 0) {
-    dest->error = WIND_ERROR_INVALID_INDEX;
+    return WIND_ERROR_INVALID_INDEX;
   } else {
-    dest->angle = wind_table[angle_idx].angle;
+    inner->angle = wind_table[angle_idx].angle;
   }
   // TODO: setup speed at some point
+  return ERROR_NONE;
 }
 
 
 
-void wind_error_manager(int status) {
+void wind_err_mgr(int status) {
   switch (status) {
     case WIND_ERROR_INVALID_INDEX:
       Serial.println("WIND: An empty array was passed to min_idx!");
