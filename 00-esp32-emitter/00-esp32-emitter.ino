@@ -3,6 +3,7 @@
 #include "03-pressure.ino"
 #include "99-utils.ino"
 #include "98-UART-slave.ino"
+#include "97-BLE-station.ino"
 #include <BLEDevice.h>
 
 int global_min_delay = 0;
@@ -32,6 +33,9 @@ void setup() {
     global_min_delay = max(global_min_delay, r.min_delay);
     modules[i].log_errors(r.error);
   }
+
+  uart_slave_setup();
+  ble_station_setup();
 
   Serial.printf("Setup Completed in %dms\n", elapsed());
 }
