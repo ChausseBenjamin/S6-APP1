@@ -44,11 +44,11 @@ typedef int (*reader_fn_t)(void *);
 // any function a sensor uses to log shit
 typedef void (*err_mgr_fn_t)(int);
 
-typedef struct Module {
+typedef struct SensorModule {
   setup_fn_t   init;
   reader_fn_t  update;
   err_mgr_fn_t manage_errors;
-} Module;
+} SensorModule;
 
 // ---- TIMING STUFF
 

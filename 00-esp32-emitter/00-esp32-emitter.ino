@@ -9,13 +9,13 @@
 
 int global_min_delay = 0;
 
-Module modules[] = {
+SensorModule sensors[] = {
   { light_setup,    light_read,    light_err_mgr    },
   { wind_setup,     wind_read,     wind_err_mgr     },
   { humidity_setup, humidity_read, humidity_err_mgr },
   { pressure_setup, pressure_read, pressure_err_mgr },
 };
-int module_count = LENGTH(modules);
+int module_count = LENGTH(sensors);
 
 // Avoid constantly allocating+freeing:
 // Always rewrite to the same memory location on every read
@@ -23,7 +23,7 @@ int          light_data;
 WindData     wind_data;
 HumidityData humidity_data;
 PressureData pressure_data;
-// XXX: ensure commented modules are also commented here to ensure alignment
+// XXX: ensure commented sensors are also commented here to ensure alignment
 // XXX: ensure destinations have the same order as their parent sensor
 //      (otherwise: Memory-Leak go brrrrr!)
 void *destinations[] = {
@@ -40,9 +40,9 @@ void setup() {
 
   for (int i=0; i<module_count; i++) {
     // run the setup func
-    SetupResult r = modules[i].init();
+    SetupResult r = sensors[i].init();
     global_min_delay = max(global_min_delay, r.min_delay);
-    modules[i].manage_errors(r.error);
+    sensors[i].manage_errors(r.error);
   }
 
   uart_slave_setup();
@@ -55,19 +55,22 @@ void loop() {
   loopStart = millis();
 
   for (int i=0; i<module_count; i++) {
-    int err = modules[i].update(destinations[i]);
+    int err = sensors[i].update(destinations[i]);
     if (err != NIL) {
-      modules[i].manage_errors(err);
+      sensors[i].manage_errors(err);
     }
   }
 
-  Serial.printf("light:%d,humidity:{H:%f,T:%f},pressure:{P:%f,T:%f},wind:{dir:%f}\n",
+  Serial.printf("light:%d,humidity:{H:%f,T:%f},pressure:{P:%f,T:%f},wind:{dir:%f,speed:%f}\n",
     light_data,
     humidity_data.humidity,
     humidity_data.temp,
     pressure_data.pressure,
     pressure_data.temp,
-    wind_data.angle);
+    wind_data.angle,
+    wind_data.speed);
 
-  while (elapsed() < global_min_delay);
+  while (elapsed() < global_min_delay) {
+    delay(1); // Service the watchdog
+}
 }

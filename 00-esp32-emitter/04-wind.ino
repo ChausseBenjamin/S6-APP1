@@ -13,8 +13,23 @@
 // how long to wait between single reads
 #define WIND_DIR_READ_DELAY 5
 
+#define WIND_KMH_PER_HZ 2.4f
+
 #define WIND_ERROR_NONE          ERROR_NONE
 #define WIND_ERROR_INVALID_INDEX -1
+
+volatile uint32_t wind_last_pulse = 0;
+volatile uint32_t wind_last_period = 0;
+volatile bool wind_new_period = false;
+
+void IRAM_ATTR windISR(void) {
+  uint32_t now = micros();
+  uint32_t period = now - wind_last_pulse;
+
+  wind_last_period = period;
+  wind_last_pulse = now;
+  wind_new_period = true;
+}
 
 typedef struct WindData {
   float angle;
@@ -54,10 +69,22 @@ SetupResult wind_setup() {
     .min_delay = WIND_READ_DELAY,
     .error     = ERROR_NONE
   };
-  // TODO: setup speed at some point
-
   pinMode(WIND_DIR_PIN, INPUT);
+  pinMode(WIND_SPEED_PIN, INPUT_PULLUP);
+
+attachInterrupt(
+      digitalPinToInterrupt(WIND_SPEED_PIN),
+      windISR,
+      FALLING
+   );
+
   return result;
+}
+
+float wind_speed_kmh(uint32_t period) {
+  if (period == 0) return 0.0f;
+  float freq_hz = 1e6f / period;
+  return freq_hz * WIND_KMH_PER_HZ;
 }
 
 int wind_dir_raw() {
@@ -83,6 +110,7 @@ int wind_dir_nearest_angle(int raw) {
 int wind_read(void *dest) {
   WindData *inner = (WindData *) dest;
 
+  /* --- direction --- */
   int raw_dir = wind_dir_raw();
   int angle_idx = wind_dir_nearest_angle(raw_dir);
   if (angle_idx < 0) {
@@ -90,7 +118,23 @@ int wind_read(void *dest) {
   } else {
     inner->angle = wind_table[angle_idx].angle;
   }
-  // TODO: setup speed at some point
+  /* --- speed --- */
+  uint32_t period;
+  bool has_new;
+
+  noInterrupts();
+  period = wind_last_period;
+  has_new = wind_new_period;
+  wind_new_period = false;
+  interrupts();
+
+  if (has_new && period > 0) {
+    inner->speed = wind_speed_kmh(period);
+  } else {
+    inner->speed = 0.0f;
+  }
+
+
   return ERROR_NONE;
 }
 

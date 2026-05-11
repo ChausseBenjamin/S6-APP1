@@ -5,11 +5,13 @@
 
 #define HUMID_PIN 16
 
+// Minimum interval between reads (ms):
 #define HUMID_READ_DELAY 2000
 
 #define HUMID_ERROR_NONE     ERROR_NONE
 #define HUMID_ERROR_TIMING   1
 #define HUMID_ERROR_CHECKSUM 2
+#define HUMID_ERROR_TOO_FAST  3
 
 typedef struct HumidityData {
   float temp;
@@ -28,12 +30,23 @@ SetupResult humidity_setup() {
   return result;
 }
 
+// Returns one of HUMID_ERROR_* codes
 int humidity_read(void *dest) {
+  static unsigned long last_read_time = 0;
   HumidityData *inner = (HumidityData *) dest;
   int i, j;
   int duree[42];
   unsigned long pulse;
   byte data[5];
+  unsigned long now = millis();
+
+  // Enforce at least 2000ms (2s) between every read attempt (success or fail)
+  if (now - last_read_time < HUMID_READ_DELAY) {
+    // Don't update inner->temp/inner->humidity, just return error
+    return HUMID_ERROR_TOO_FAST;
+  }
+  last_read_time = now;
+
   inner->temp = 0;
   inner->humidity = 0;
 
@@ -45,13 +58,13 @@ int humidity_read(void *dest) {
   delay(250);
   digitalWrite(HUMID_PIN, LOW);
   delay(20);
+
   digitalWrite(HUMID_PIN, HIGH);
   delayMicroseconds(40);
   pinMode(HUMID_PIN, INPUT_PULLUP);
 
   while (digitalRead(HUMID_PIN) == HIGH);
   i = 0;
-
   do {
     pulse = pulseIn(HUMID_PIN, HIGH);
     duree[i] = pulse;
@@ -59,7 +72,7 @@ int humidity_read(void *dest) {
   } while (pulse != 0 && i < 42);
 
   if (i != 42) {
-    return HUMID_ERROR_TIMING;;
+    return HUMID_ERROR_TIMING;
   }
 
   for (i = 0; i < 5; i++) {
@@ -78,7 +91,9 @@ int humidity_read(void *dest) {
 
   inner->humidity = data[0] + (data[1] / 256.0);
   inner->temp = data[2] + (data[3] / 256.0);
+  return HUMID_ERROR_NONE;
 }
+
 
 void humidity_err_mgr(int status) {
   switch (status) {
@@ -87,6 +102,9 @@ void humidity_err_mgr(int status) {
       break;
     case HUMID_ERROR_CHECKSUM:
       Serial.println("HUMIDITY: Checksum error!");
+      break;
+    case HUMID_ERROR_TOO_FAST:
+      Serial.println("HUMIDITY: Read requested too soon (must wait >=2s)");
       break;
   }
 }
