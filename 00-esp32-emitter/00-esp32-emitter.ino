@@ -8,6 +8,7 @@
 #include "97-BLE-station.ino"
 
 int global_min_delay = 0;
+UARTData weather;
 
 SensorModule sensors[] = {
   { light_setup,    light_read,    light_err_mgr    },
@@ -68,9 +69,26 @@ void loop() {
     pressure_data.pressure,
     pressure_data.temp,
     wind_data.angle,
-    wind_data.speed);
+    wind_data.speed
+  );
+
+  // BLE Notifications
+  weather.temperature = humidity_data.temp;
+  weather.humidity = humidity_data.temp;
+  weather.wind_speed = wind_data.speed;
+  weather.wind_direction = wind_data.angle;
+  weather.pressure = pressure_data.pressure;
+  weather.light = light_data;
+  weather.precipitation = 0;
+
+  String formatted = format_weather(weather);
+  ble_notify(formatted);
+
+  weather.error = UART_ERROR_NONE;
+  uart_slave_answer(weather);
+  uart_err_mgr(weather.error);
 
   while (elapsed() < global_min_delay) {
     delay(1); // Service the watchdog
-}
+  }
 }
