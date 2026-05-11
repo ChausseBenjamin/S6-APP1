@@ -20,7 +20,7 @@ int module_count = LENGTH(sensors);
 
 // Avoid constantly allocating+freeing:
 // Always rewrite to the same memory location on every read
-int          light_data;
+LightData    light_data;
 WindData     wind_data;
 HumidityData humidity_data;
 PressureData pressure_data;

@@ -21,9 +21,9 @@
 #define WIND_ERROR_NONE          ERROR_NONE
 #define WIND_ERROR_INVALID_INDEX -1
 
-volatile uint32_t wind_last_pulse = 0;
+volatile uint32_t wind_last_pulse  = 0;
 volatile uint32_t wind_last_period = 0;
-volatile bool wind_new_period = false;
+volatile bool     wind_new_period  = false;
 
 void IRAM_ATTR windISR(void) {
   uint32_t now = micros();
@@ -36,10 +36,9 @@ void IRAM_ATTR windISR(void) {
   // else: ignore due to debounce
 }
 
-
 typedef struct WindData {
-  float angle;
-  float speed;
+  float angle; // degrees
+  float speed; // km/h
 } WindData;
 
 typedef struct DirectionEntry {
@@ -78,7 +77,7 @@ SetupResult wind_setup() {
   pinMode(WIND_DIR_PIN, INPUT);
   pinMode(WIND_SPEED_PIN, INPUT_PULLUP);
 
-attachInterrupt(
+  attachInterrupt(
       digitalPinToInterrupt(WIND_SPEED_PIN),
       windISR,
       FALLING
@@ -87,7 +86,7 @@ attachInterrupt(
   return result;
 }
 
-float wind_speed_kmh(uint32_t period) {
+float wind_speed(uint32_t period) {
   if (period == 0) return 0.0f;
   float freq_hz = 1e6f / period;
   return freq_hz * WIND_KMH_PER_HZ;
@@ -135,7 +134,7 @@ int wind_read(void *dest) {
   interrupts();
 
   if (has_new && period > 0) {
-    inner->speed = wind_speed_kmh(period);
+    inner->speed = wind_speed(period);
   } else {
     inner->speed = 0.0f;
   }
@@ -143,8 +142,6 @@ int wind_read(void *dest) {
 
   return ERROR_NONE;
 }
-
-
 
 void wind_err_mgr(int status) {
   switch (status) {
