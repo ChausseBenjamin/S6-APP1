@@ -73,8 +73,8 @@ void loop() {
   );
 
   weather.error = UART_ERROR_NONE;
-  ble_notify(weather);
-  uart_slave_answer(weather);
+  ble_notify(&weather);
+  uart_slave_answer(&weather);
   uart_err_mgr(weather.error);
 
   while (elapsed() < global_min_delay) {
