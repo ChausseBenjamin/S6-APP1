@@ -72,19 +72,8 @@ void loop() {
     wind_data.speed
   );
 
-  // BLE Notifications
-  weather.temperature = humidity_data.temp;
-  weather.humidity = humidity_data.temp;
-  weather.wind_speed = wind_data.speed;
-  weather.wind_direction = wind_data.angle;
-  weather.pressure = pressure_data.pressure;
-  weather.light = light_data;
-  weather.precipitation = 0;
-
-  String formatted = format_weather(weather);
-  ble_notify(formatted);
-
   weather.error = UART_ERROR_NONE;
+  ble_notify(weather);
   uart_slave_answer(weather);
   uart_err_mgr(weather.error);
 
