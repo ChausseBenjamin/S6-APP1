@@ -8,6 +8,9 @@
 
 #define WIND_READ_DELAY 0
 
+// Debounce for wind speed pin (in microseconds)
+#define WIND_SPEED_DEBOUNCE_DELAY 2500UL
+
 // how big is the average buffer
 #define WIND_DIR_AVG_BUF    10
 // how long to wait between single reads
@@ -25,11 +28,14 @@ volatile bool wind_new_period = false;
 void IRAM_ATTR windISR(void) {
   uint32_t now = micros();
   uint32_t period = now - wind_last_pulse;
-
-  wind_last_period = period;
-  wind_last_pulse = now;
-  wind_new_period = true;
+  if (period >= WIND_SPEED_DEBOUNCE_DELAY) {
+    wind_last_period = period;
+    wind_last_pulse = now;
+    wind_new_period = true;
+  }
+  // else: ignore due to debounce
 }
+
 
 typedef struct WindData {
   float angle;

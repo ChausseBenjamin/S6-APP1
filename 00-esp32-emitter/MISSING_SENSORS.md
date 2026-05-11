@@ -48,7 +48,7 @@
 | Pressure         | Yes          | Already in code                               |
 | Sunlight         | Yes          | Already in code                               |
 | Wind Direction   | Yes          | Add wind vane + analog reading/mapping logic  |
-| Wind Speed       | No           | Add anemometer + pulse counting logic         |
+| Wind Speed       | Yes          | Add anemometer + pulse counting logic         |
 | Precipitation    | No           | Add rain gauge + counter logic                |
 
 ---
