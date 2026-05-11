@@ -1,5 +1,5 @@
-#ifndef __WATER_SENSOR__
-#define __WATER_SENSOR__
+#ifndef __FLOW_SENSOR__
+#define __FLOW_SENSOR__
 
 #include "99-utils.ino"
 
@@ -31,7 +31,7 @@ void IRAM_ATTR flowISR(void) {
 // mm of water per second feels cursed for some reason...
 typedef float FlowData; // mm/s
 
-SetupResult water_setup() {
+SetupResult flow_setup() {
   SetupResult result = {
     .min_delay = FLOW_MIN_DELAY,
     .error     = ERROR_NONE,
@@ -79,4 +79,4 @@ void flow_err_mgr(int status) {
   }
 }
 
-#endif // __WATER_SENSOR__
+#endif // __FLOW_SENSOR__

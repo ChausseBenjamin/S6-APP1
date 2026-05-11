@@ -2,6 +2,7 @@
 #include "02-humidity.ino"
 #include "03-pressure.ino"
 #include "04-wind.ino"
+#include "05-flow.ino"
 
 #include "99-utils.ino"
 #include "98-UART-slave.ino"
@@ -15,6 +16,7 @@ SensorModule sensors[] = {
   { wind_setup,     wind_read,     wind_err_mgr     },
   { humidity_setup, humidity_read, humidity_err_mgr },
   { pressure_setup, pressure_read, pressure_err_mgr },
+  { flow_setup,     flow_read,     flow_err_mgr,    },
 };
 int module_count = LENGTH(sensors);
 
@@ -24,6 +26,7 @@ LightData    light_data;
 WindData     wind_data;
 HumidityData humidity_data;
 PressureData pressure_data;
+FlowData     flow_data;
 // XXX: ensure commented sensors are also commented here to ensure alignment
 // XXX: ensure destinations have the same order as their parent sensor
 //      (otherwise: Memory-Leak go brrrrr!)
@@ -32,6 +35,7 @@ void *destinations[] = {
   &wind_data,
   &humidity_data,
   &pressure_data,
+  &flow_data,
 };
 
 void setup() {
@@ -62,14 +66,15 @@ void loop() {
     }
   }
 
-  Serial.printf("light:%d,humidity:{H:%f,T:%f},pressure:{P:%f,T:%f},wind:{dir:%f,speed:%f}\n",
+  Serial.printf("light:%d,humidity:{H:%f,T:%f},pressure:{P:%f,T:%f},wind:{dir:%f,speed:%f},flow:%f\n",
     light_data,
     humidity_data.humidity,
     humidity_data.temp,
     pressure_data.pressure,
     pressure_data.temp,
     wind_data.angle,
-    wind_data.speed
+    wind_data.speed,
+    flow_data
   );
 
   // BLE Notifications

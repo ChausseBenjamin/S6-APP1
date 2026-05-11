@@ -7,7 +7,7 @@
 
 #define LIGHT_READ_DELAY 0
 
-typedef int LightData; // lux
+typedef int LightData; // raw analog read data
 
 SetupResult light_setup() {
   SetupResult result = {
@@ -19,7 +19,6 @@ SetupResult light_setup() {
 }
 
 int light_read(void *dest) {
-  // TODO: use maths to convert analog data to physical value
   LightData *inner = (LightData *) dest;
   *inner = analogRead(LIGHT_PIN);
 
