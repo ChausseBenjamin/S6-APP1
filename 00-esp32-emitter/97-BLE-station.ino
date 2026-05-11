@@ -5,6 +5,7 @@
 #define CHAR_UUID             "abcd1234-1234-1234-1234-abcdef123456"
 
 #define SERVER_MAC_ADDRESS    "c0:49:ef:4b:20:a2"
+#define BLE_MTU               186
 
 #define BLE_BASE_STATION_NAME "Weather station"
 
@@ -35,15 +36,16 @@ class ServerCallbacks : public BLEServerCallbacks {
 };
 
 int ble_station_setup() {
-    BLEDevice::init(BLE_BASE_STATION_NAME);
+  BLEDevice::setMTU(BLE_MTU);
+  BLEDevice::init(BLE_BASE_STATION_NAME);
 
-    Serial.print("Station MAC: ");
-    Serial.println(BLEDevice::getAddress().toString().c_str());
+  Serial.print("Station MAC: ");
+  Serial.println(BLEDevice::getAddress().toString().c_str());
 
-    BLEServer* pServer = BLEDevice::createServer();
-    pServer->setCallbacks(new ServerCallbacks());
+  BLEServer* pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new ServerCallbacks());
 
-    BLEService* pService = pServer->createService(SERVICE_UUID);
+  BLEService* pService = pServer->createService(SERVICE_UUID);
 
     pCharacteristic = pService->createCharacteristic(
       CHAR_UUID,

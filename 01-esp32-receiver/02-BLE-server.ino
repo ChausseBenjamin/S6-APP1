@@ -3,6 +3,7 @@
 
 #define SERVICE_UUID          "12345678-1234-1234-1234-1234567890ab"
 #define CHAR_UUID             "abcd1234-1234-1234-1234-abcdef123456"
+#define BLE_MTU               186
 
 #define STATION_MAC_ADDRESS   "c4:de:e2:c0:0e:86"
 
@@ -48,6 +49,7 @@ static void notifyCallback(
 
 int ble_server_setup() {
     Serial.println("BLE: Setting up...");
+    BLEDevice::setMTU(BLE_MTU);
     BLEDevice::init(BLE_BASE_STATION_NAME);
 
     Serial.print("- Client MAC: ");
@@ -67,6 +69,18 @@ int ble_server_setup() {
         Serial.println("BLE ERROR: Failed to connect");
         Serial.println("YOU NEED TO RESTART THE ESP32 TO FIX THIS ISSUE");
         return -1;
+    }
+
+    uint16_t mtu = pClient->getMTU();
+    Serial.println("Default MTU: " + String(mtu));
+
+    pClient->setMTU(BLE_MTU);
+    delay(200);
+    mtu = pClient->getMTU();
+
+    Serial.println("Negotiated MTU: " + String(mtu));
+    if (mtu != BLE_MTU) {
+        Serial.println("BLE ERROR: MTU did not negociate, you're stuck at 20. Not enough for the full message.");
     }
 
     Serial.println("BLE: Connected!");
