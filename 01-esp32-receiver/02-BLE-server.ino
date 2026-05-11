@@ -19,6 +19,7 @@ static BLEAddress sensorStationAddress(STATION_MAC_ADDRESS);
 
 BLEClient* pClient = nullptr;
 BLERemoteCharacteristic* pRemoteChar = nullptr;
+bool state = false;
 
 class WeatherCallback : public BLEClientCallbacks {
 
@@ -45,9 +46,13 @@ static void notifyCallback(
     }
 
     Serial.println("BLE Received: " + message);
+    state = !state;
+    digitalWrite(19, state);
 }
 
 int ble_server_setup() {
+    pinMode(19, OUTPUT);
+
     Serial.println("BLE: Setting up...");
     BLEDevice::setMTU(BLE_MTU);
     BLEDevice::init(BLE_BASE_STATION_NAME);

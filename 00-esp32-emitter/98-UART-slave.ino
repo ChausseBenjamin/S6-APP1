@@ -1,8 +1,8 @@
 #ifndef __UART_SLAVE__
 #define __UART_SLAVE__
 
-#define PIN_RX 17
-#define PIN_TX 16
+#define PIN_RX 14
+#define PIN_TX 13
 
 #define UART_REQUEST            "Get"
 #define UART_TIMEOUT_MS         2000
@@ -21,6 +21,7 @@
 
 HardwareSerial UART(2);
 String rx_buffer = "";
+bool light_state = false;
 
 typedef struct UARTData {
   float temperature;        // Celcius
@@ -40,7 +41,7 @@ String format_weather(UARTData *dest)
   snprintf(
     buffer,
     sizeof(buffer),
-    "%cT: %.2f C, H: %.2f %%, L: %.2f Lx, W: %.2f m/s, Dir: %.2f rad, P: %.2f kPa, R: %.2f%c",
+    "%cT: %.2f C, H: %.2f %%, L: %.2f, W: %.2f m/s, Dir: %.2f deg, P: %.2f kPa, R: %.2f%c mm/s",
     UART_START_CHAR,
     dest->temperature,
     dest->humidity,
@@ -56,6 +57,7 @@ String format_weather(UARTData *dest)
 }
 
 int uart_slave_setup() {
+  pinMode(18, OUTPUT);
   UART.begin(UART_BAUD_RATE, SERIAL_8N1, PIN_RX, PIN_TX);
   return UART_REQUEST_GAP_MS;
 }
@@ -73,6 +75,8 @@ void uart_slave_answer(UARTData *dest) {
       if (rx_buffer == UART_REQUEST) {
         UART.println(format_weather(dest));
         Serial.println("UART: Weather sent to base station");
+        digitalWrite(18, light_state);
+        light_state = !light_state;
       } else {
         dest->error = UART_ERROR_INVALID_REQUEST;
       }

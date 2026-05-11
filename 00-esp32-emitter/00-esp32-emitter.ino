@@ -84,7 +84,7 @@ void loop() {
   weather.wind_direction = wind_data.angle;
   weather.pressure = pressure_data.pressure;
   weather.light = light_data;
-  weather.precipitation = 0;
+  weather.precipitation = flow_data;
 
 
   weather.error = UART_ERROR_NONE;
