@@ -2,20 +2,111 @@
 % durée d'ensoleillement et l'anémomètre
 
 \subsection{Ensoleillement}
+Plusieurs choix ont été analysé. Cependant, du moment qu'un capteur précis est nécessaire, les prix monte jusqu'à atteindre la lune.
+Le capteur actuel ne peut simplement pas être utilisé. Il n'a pas les données nécessaires pour donnée une unité d'ensoleillement
+qui est fidèle.
+Le tableau suivant présente une analyse simple de capteur commerciaux trouvé.
 
-\todo{faire un choix et l'expliquer}
-\todo{justifier avec le contexte de la problématique
-(c'est ok d'inventer quand la problématique dit rien)}
-\todo{faire des liens avec les autres domaines: controlleur+capteur+sensor
-(obligatoire: le prof pas du cas-par-cas)}
+\begin{table}[h]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Caractéristique} & \textbf{LS06-S} & \textbf{Apogee SP-215-SS} & \textbf{Kipp \& Zonen SMP10} \\
+\hline
+Prix & $<5\$ $ & $\approx 339\$ $ & $\approx 1500\$ $ \\
+\hline
+Précision & Non spécifiée & $<3\%$ à $1000\ \mathrm{W/m^2}$ & ISO 9060 Classe A à réponse spectrale plate \\
+\hline
+Résolution & Non spécifiée & Dépend du CAN & $0.1\ \mathrm{W/m^2}$ \\
+\hline
+Fiabilité & Élevée & Calibration usine, dérive $<2\%$/an & Extrême \\
+\hline
+Fidélité & Non spécifiée & Répétabilité $<1\%$ & Extrême \\
+\hline
+Tension d'alimentation & 5V & 5.5 à 24V DC & 5 à 30V DC \\
+\hline
+Courant & 18--30\,\mu A & 300\,\mu A & 8mA \\
+\hline
+Protocole & Analogique & Analogique 0--5V & UART \\
+\hline
+Plage spectrale & Visible seulement & 360--1120\,nm & 285--3000\,nm \\
+\hline
+Temps de réponse & Non spécifié & $<1$ ms & $<1$ s \\
+\hline
+Température de fonctionnement & Non spécifiée & $-40$ à $70^\circ$C & $-40$ à $80^\circ$C \\
+\hline
+Plage d'humidité & Non spécifiée & 0--100\% RH & 0--100\% RH \\
+\hline
+Champ de vision & Non spécifiée & $180^\circ$ & $180^\circ$ \\
+\hline
+Type de sortie & Analogique & 0--5V & Numérique / analogique \\
+\hline
+Certification & Aucune & ISO 9060:2018 Classe C & ISO 9060 Classe A \\
+\hline
+Dérive annuelle & Non spécifiée & $<2\%$/an & Très faible \\
+\hline
+Résistance à l'eau & Non spécifiée & Submersible jusqu'à 30m & IP67 \\
+\hline
+Garantie & Non spécifiée & 4 ans & 5 ans typique \\
+\hline
+\end{tabular}%
+}
+\caption{Comparaison des options de pyranomètres}
+\label{tab:pyranometer_comparison}
+\end{table}
 
+Le capteur à 1500\$ est évidament le meilleur possible. Mais il est beaucoup trop chère et son niveau scientifique de précision n'est
+pas requis. Le SP-215-SS est la solution idéal. Il peut être complètement éteint lorsqu'il n'est pas utilisé, à une consommation extrèment
+faible, est conçus pour des environnement complex, requiert aucun protocol outre une lecture analogue, et est même calibré selon des normes ISO.
+
+Les données lu par ce capteur sont fiable et utilisable. De plus, la fiche de donnée fournis par la compagnie est complète, précise et contient
+toutes les données nécessaires pour les acheteurs de la station météo. C'est un capteur de qualité industriel. Il sera donc choisi malgrés sont
+prix. Les utilisateurs pourront l'inclure ou non dans leurs configuration lors de l'achat de la sation météo.
 
 \subsection{L'anémomètre}
+La même étude que le capteur d'ensoleillement à été faite, et la même conclusion à été trouvé.
+Le capteur actuel ne peut simplement pas être utilisé. Il ne résistera pas aux vent et à l'hivers, est fait de plastique qui ne résiste pas
+au soleil, et est aussi fragile qu'une tige de spaghetti.
+Le tableau suivant présente les alternatives les plus intérresant qui ont été trouvé.
 
-\todo{faire un choix et l'expliquer}
-\todo{justifier avec le contexte de la problématique
-(c'est ok d'inventer quand la problématique dit rien)}
-\todo{faire des liens avec les autres domaines: controlleur+capteur+sensor
-(obligatoire: le prof pas du cas-par-cas)}
+Il est important de se rappellé que l'unité SparkFun contient 3 senseurs.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Caractéristique} & \textbf{SparkFun} & \textbf{Inspeed WS2R} & \textbf{Gill WindSonic 60} \\
+\hline
+Prix & 80\$ & 96\$ & 600\$ \\
+\hline
+Précision & Inconnue & $\pm 4\%$ & 2\% à 12 m/s \\
+\hline
+Résolution & $\approx 2.4$ km/h à non spécifié & $\approx 1.6$ km/h à $>200$ km/h & 0.01 m/s, 0.1° à 75 m/s \\
+\hline
+Fiabilité & Très pauvre & Correct (calibré) & Extrême (IP66) \\
+\hline
+Fidélité & Correct & Meilleur & Extrême \\
+\hline
+Tension (V) & Source externe & Source externe & 12--30 VDC \\
+\hline
+Courant & Dépend de la direction & 3 mA (capteur Hall) & 2 mA à 44 mA \\
+\hline
+Protocole & Lecture analogique & Lecture analogique & RS-232 \\
+\hline
+\end{tabular}
+\caption{Comparaison de capteurs de vent}
+\label{tab:wind_sensors}
+\end{table}
+
+Le meilleur capteur est le Gill WindSonic 60. Il à une extrème précision, dit la direction du vent en degrées à une extrème précision.
+Il contient tout le nécessaire dans ça feuille de données. De plus, son gros avantage est qu'il n'a aucune pièce qui bouge, fessant en
+sorte qu'il est garanti 5 ans par la compagnie. Ils ont même certains modèles plus couteux qui ont des fonctionalitées pour enlevé la glace
+et la neige. Le ESP32 supporte le protocole RS-232 nativement, donc communiqué avec est simple.
+
+Il vas avoir besoin d'un circuit pour le 12V nécessaire, mais il à juste besoin d'être actif lors des mesures. La calibration et la précision
+pour son prix, malgrés qu'il est très chère, justifie son addition à une station météo robuste et durable.
 
 
