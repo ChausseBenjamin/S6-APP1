@@ -17,9 +17,33 @@ De plus, il sature facilement.
 
 Le pire reste cependant la station météo sparkfun elle même. C'est un kit éducationel qui n'est pas fait pour une usage commerciale.
 En effet, sa composition en plastique est fébrile et ne supporterais pas d'être à l'extérieur. La présence de températures en dessous
-de 0C vont causé des bris avec le gel. La précision de l'anémomètre est au meilleur, médiocre. La girouette pour la direction du vent
-à des résistances tellement pas précise qu'il requiert une calibration des directions différentes pour chaque unitées
+de 0C vont causé des bris avec le gel. La précision de l'anémomètre est au meilleur, médiocre. Même si l'unité est à niveau, les cuillères
+ne sont pas balancées. La girouette pour la direction du vent à des résistances tellement pas précise qu'il requiert une calibration 
+des directions différentes pour chaque unitées. De plus il est possible d'être entre deux résistances, créant un diviseur de tension qui
+fausse les valeurs. Pour finir sur cette station, le pluviomètre permet uniquement de mesuré les précipitations qui tombe directment dedans.
+Du moment qu'il y a du vent, la précipitation sera fausse. Sans dire qu'il vas gelé l'hivers et accumulé les débris dedans.
+
+Le gros avantage de la station SparkFun est la nature passif du système, donc une consommation moindre.
 
 \subsection{Protocoles actuels}
+\subsubsection{Station météo}
+Les protocoles actuel sont très robuste dans la station météo prototype.
+En effet, les cables sont courts et la station météo est fait pour être mise à l'extérieur, donc un environnement sans grande interférences
+comparé à une usine par exemple. Dans le meilleur des mondes, pour simplifié le tout, avoir le même protocol serait meilleur.
+I2C permetterais d'utilisé moin de fils. Un mix de SPI et I2C est correct puisque les fonctions I2C peuvent être réutilisé dans le SPI.
+Mais sa nature full-duplex n'est pas nécessaire, les capteurs nont pas besoin d'être lut aussi rapidement.
+Le meilleur protocol serait I2C, il est bon, fiable et pas chère. UART fonctionne aussi, mais c'est pas nécessaire du tout. Il prend beaucoup
+de mémoire dans le microcontrolleur, sans amené grand avantages.
+
+Ceci dit, le choix du capteur est plus important que le protocol, du simple fait que les distances sont courte.
+
+\subsubsection{Protocoles sans fils}
+Bluetooth ne peut pas fonctionnée. La distance entre les stations météo et la station de base est potentiellement trop grande. Quelques
+centaines de mètres. Sans mentionné la complexité d'avoir plus que 7 station météos pour ce protocol. De plus, Bluetooth requiert des
+liscences pour le commerciale.
+De plus, en méthode de souscription et notification, la station de base n'a pas grandes accès sur la station météos.
 
 \subsection{Microcontrolleur actuel}
+Le ESP32 est un excellent choix, avec son mode basse énergie il peut consommée aussi bas que quelques micro ampères.
+Il supporte toutes les protocoles nécessaires, à assez de GPIO pour répondre à tout les besoins, et est relativement peu couteux
+lorsqu'il est implémenté sur un PCB fait sur mesure plutôt qu'un kit de développement.
