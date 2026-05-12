@@ -22,8 +22,9 @@ void loop() {
   uart_master_read(&uart_data);
 
   log_UART_errors(uart_data.error);
-  Serial.println("Received data:");
+  Serial.println("UART: Received:");
   Serial.println(uart_data.raw);
 
   while (elapsed() < min_delay);
+  delay(1000);
 }

@@ -69,7 +69,7 @@ void uart_slave_answer(UARTData *dest) {
     if (received == UART_END_CHAR) {
       rx_buffer.trim();
 
-      Serial.print("Full message: ");
+      Serial.print("UART: Received: ");
       Serial.println(rx_buffer);
 
       if (rx_buffer == UART_REQUEST) {

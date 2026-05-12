@@ -1,0 +1,25 @@
+% 1. Une discussion sur à quel point la station actuel est mauvaise
+
+\subsection{Capteurs actuels}
+Les capteutrs actuel se résument à une qualité d'amateurs.
+Par exemple, le DHT11 à des températures de fonction entre 0 et 50 degrées celcius, ce qui ne marchera pas l'hivers.
+De plus, il lit l'humidité que de 20\% à 90\%, avec une stabilité médiocre entre capteurs. Il ne peut donc pas être utilisé.
+
+Le capteur DSP310 est un bon capteur. Il fonctionne de -40C à 85C, à une précision de $\pm$ 0.5C et $\pm$ 1 hPa.
+Il est plutôt fidèle et fiable, et est utilisé dans des situations commerciales. Sa consommation est optimal, à environ 2$\mu$A.
+Il est donc correct de continuer à l'utilisé.
+
+Pour ce qui est de l'ensolleillement, le LS06-S fonctionne de -25C à 75C, donc quasiment correct pour nos hivers. Sa consommation
+dépend de la luminosité extérieur, autour de quelques mA. Cependant, son gros problème est le manque d'information dans sa datasheet
+pour être en mesure de convertir de façon commercial, ses valeurs en unités connues. Ayant donc une fidélité médiocre.
+Il fonctionne mieux comme un capteur de lumière que quelquechose qui donne une valeur d'ensolleillement précis.
+De plus, il sature facilement.
+
+Le pire reste cependant la station météo sparkfun elle même. C'est un kit éducationel qui n'est pas fait pour une usage commerciale.
+En effet, sa composition en plastique est fébrile et ne supporterais pas d'être à l'extérieur. La présence de températures en dessous
+de 0C vont causé des bris avec le gel. La précision de l'anémomètre est au meilleur, médiocre. La girouette pour la direction du vent
+à des résistances tellement pas précise qu'il requiert une calibration des directions différentes pour chaque unitées
+
+\subsection{Protocoles actuels}
+
+\subsection{Microcontrolleur actuel}

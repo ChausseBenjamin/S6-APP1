@@ -31,7 +31,7 @@ int uart_master_setup() {
 }
 
 void uart_master_read(UARTData *dest) {
-  Serial.println("Sending data request to sensor station");
+  Serial.println("UART: Sending request");
 
   UART.println(UART_REQUEST);
 
