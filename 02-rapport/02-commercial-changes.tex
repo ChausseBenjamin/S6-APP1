@@ -4,27 +4,38 @@
 % sans �l.
 
 \subsection{Choix du microcontrolleur}
+Le ESP32 est fiable, facile d'utilisation est extrèmement facile à intégré sur un PCB. Cependant, le modèle actuel est vieux.
+Il serait donc meilleur d'utilisé le ESP32-S3, lequel à besoin de moins de circuit externe pour fonctionner, coute 3\$ de l'unité
+et marche tel quel sur un PCB, sans grand circuit externe.
+Il supporte nativement tout les protocoles nécessaires, peut être facilement connecté à une antenne LoRa, à un mode de consommation
+qui utilise quelques micro ampères et de plus, il supporte nativement le protocole USB, sans circuit externe.
 
-\todo{faire un choix et l'expliquer}
-\todo{justifier avec le contexte de la problématique
-(c'est ok d'inventer quand la problématique dit rien)}
-\todo{faire des liens avec les autres domaines: controlleur+capteur+sensor
-(obligatoire: le prof pas du cas-par-cas)}
+D'autres microcontrolleurs moins chère avec des consommations encore plus faible existe, mais celui-ci viens avec l'avantage que les
+acheteurs pourraient le reprogrammé pour ajouté leurs propre fonctionalitées aux stations métérologique.
 
+Il peut être utilisé pour les deux microcontrolleurs sans problème.
 
 \subsection{Choix d'interfaces capteurs}
+Les interfaces des capteurs, comme dit précédament, seraient meilleurs s'ils utilisaient tous le même protocol.
+Cependant, temps qu'ils fonctionne avec les protocoles supporté par le ESP32-S3, c'est bon. En effet, les distances
+sont courtes, la vitesse d'échange de donnée n'a pas besoin d'être très élevé, il n'y a essentiellement aucun interférence s'il
+est utilisé dans des environnement normal. Sinon, de simple cables avec un "grounding" vas réglé le problème.
 
-\todo{faire un choix et l'expliquer}
-\todo{justifier avec le contexte de la problématique
-(c'est ok d'inventer quand la problématique dit rien)}
-\todo{faire des liens avec les autres domaines: controlleur+capteur+sensor
-(obligatoire: le prof pas du cas-par-cas)}
-
+Tout les capteurs choisis ont des protocoles supportées par le ESP32-S3. Ils sont donc utilisable.
 
 \subsection{Choix de communications réseaux}
+LoRa sera utilisé pour les communications entre les stations météorologiques et la station de base, avec une topologie en étoile où 
+la station de base agit comme maître qui envoie des requètes et les stations météo sont en mode basse consommation lorsqu'elles ne transmettent pas ou ne 
+reçoivent pas de requêtes. 
 
-\todo{faire un choix et l'expliquer}
-\todo{justifier avec le contexte de la problématique
-(c'est ok d'inventer quand la problématique dit rien)}
-\todo{faire des liens avec les autres domaines: controlleur+capteur+sensor
-(obligatoire: le prof pas du cas-par-cas)}
+LoRa permet une communication sans fil sur plusieurs kilomètres grâce à la modulation 
+\textit{chirp spread spectrum} (CSS), avec des débits typiques de quelques centaines de bit/s à plusieurs kbit/s selon le 
+\textit{spreading factor} (SF7 à SF12). C'est largement suffisant pour des données météorologiques, transmises par trames courtes, peu
+fréquament. 
+
+L'un des principaux avantages de LoRa est sa très faible consommation énergétique, avec des courants de veille en microampère et des 
+transmissions de courte durée permettant un retour rapide en mode \textit{sleep}. Ça permet aux stations de fonctionner de manière 
+autonome sur batterie ou énergie solaire pendant de longues périodes. La station de base vas être capable de gérer un nombre 
+élevé de stations météo, limité principalement par le débit et le temps d'occupation du canal.
+
+De plus, contrairement à Bluetooth, qui coute de l'argent lors de vente de modules au commercial, ce n'est pas le cas pour LoRa.
